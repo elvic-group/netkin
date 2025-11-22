@@ -1,71 +1,73 @@
 import React from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { PlayCircle } from 'lucide-react';
 import { HERO_IMAGES } from '../constants';
 
 const Hero: React.FC = () => {
   return (
-    <div className="relative w-full h-screen min-h-[700px] overflow-hidden">
-      {/* Background Image */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: 'url("https://picsum.photos/id/971/1920/1080")' }} 
-      >
-        <div className="absolute inset-0 bg-black/40"></div>
-        {/* Vignette/Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-netkin-dark via-transparent to-black/60"></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent"></div>
+    <div className="relative w-full h-[800px] bg-netkin-dark overflow-hidden flex items-center">
+      
+      {/* Right Side Image with Fade */}
+      <div className="absolute right-0 top-0 w-[70%] h-full">
+         <img 
+            src="https://images.unsplash.com/photo-1503951914296-3a5a5b01151e?auto=format&fit=crop&w=1500&q=80" 
+            alt="Hero" 
+            className="w-full h-full object-cover"
+         />
+         {/* Gradient Mask to fade into black on the left */}
+         <div className="absolute inset-0 bg-gradient-to-r from-netkin-dark via-netkin-dark/60 to-transparent"></div>
+         <div className="absolute inset-0 bg-gradient-to-t from-netkin-dark via-transparent to-transparent"></div>
+         
+         {/* Play Button Overlay on Image */}
+         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <div className="rounded-full border-2 border-white/30 p-1 cursor-pointer hover:scale-110 transition-transform group">
+                 <div className="bg-white/10 backdrop-blur-sm rounded-full p-4">
+                    <PlayCircle size={64} strokeWidth={1} className="text-white fill-white/20" />
+                 </div>
+            </div>
+         </div>
       </div>
 
-      {/* Navigation Arrows */}
-      <button className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors">
-        <ChevronLeft size={48} strokeWidth={1} />
-      </button>
-      <button className="absolute right-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors">
-        <ChevronRight size={48} strokeWidth={1} />
-      </button>
+      {/* Content Left */}
+      <div className="container mx-auto px-8 relative z-10 pt-20">
+        <div className="max-w-2xl">
+          
+          {/* Tag */}
+          <div className="inline-block border border-white/30 px-4 py-2 mb-8">
+            <span className="text-xs font-bold tracking-widest uppercase text-white">Cinema News</span>
+          </div>
 
-      {/* Main Content */}
-      <div className="absolute inset-0 flex flex-col justify-center items-center text-center px-4 pt-20">
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-wide mb-6 drop-shadow-lg uppercase max-w-4xl leading-tight">
-          A Feeling. An Experience. Where You Want.
-        </h1>
-        <p className="text-gray-200 text-sm md:text-base font-light max-w-xl mb-10 leading-relaxed drop-shadow-md">
-          Movies, series, children's favorites and sports. Stream or watch offline.<br />
-          Exit whenever you want.
-        </p>
-        <button className="bg-netkin-red hover:bg-red-700 text-white text-xs font-bold py-4 px-10 tracking-widest uppercase transition-colors shadow-lg">
-          Try a free month
-        </button>
-      </div>
+          {/* Title */}
+          <h1 className="text-5xl md:text-6xl font-black text-white uppercase leading-[1.1] mb-8 tracking-tight">
+            Congolese 2018:<br />
+            Our Most<br />
+            Anticipated Films
+          </h1>
 
-      {/* Bottom Layout */}
-      <div className="absolute bottom-12 left-0 w-full px-12 md:px-24 flex items-end justify-between">
-        
-        {/* Left: Current Item Info */}
-        <div className="hidden md:block">
-          <h3 className="text-white font-black uppercase text-sm tracking-widest mb-1">
-            The Fair Weather Felon
-          </h3>
-          <p className="text-netkin-red text-xs font-bold uppercase tracking-wider">
-            Documentary
+          {/* Description */}
+          <p className="text-gray-400 text-sm leading-7 max-w-lg mb-12">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
           </p>
-        </div>
 
-        {/* Center/Right: Thumbnails */}
-        <div className="hidden lg:flex gap-4">
-            {HERO_IMAGES.map((img, idx) => (
-                <div key={idx} className={`relative w-32 h-20 overflow-hidden border-b-2 ${idx === 1 ? 'border-white' : 'border-transparent opacity-50'}`}>
-                    <img src={img} alt={`Thumbnail ${idx}`} className="w-full h-full object-cover" />
-                </div>
+          {/* Button */}
+          <button className="bg-netkin-red hover:bg-red-700 text-white text-xs font-bold py-4 px-10 tracking-widest uppercase transition-colors shadow-lg mb-16">
+            Watch More
+          </button>
+
+          {/* Thumbnails */}
+          <div className="flex gap-4">
+            {HERO_IMAGES.map((img, index) => (
+              <div key={index} className="w-32 h-20 relative group cursor-pointer overflow-hidden">
+                <img src={img} alt="thumb" className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" />
+                {index === 0 && <div className="absolute bottom-0 left-0 right-0 h-1 bg-white"></div>}
+              </div>
             ))}
-        </div>
+            <div className="flex items-end gap-1 pb-1 ml-2">
+                <div className="w-1 h-1 bg-white rounded-full"></div>
+                <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
+                <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
+            </div>
+          </div>
 
-        {/* Right: Dots */}
-        <div className="flex gap-2">
-            <div className="w-2 h-2 rounded-full bg-netkin-red"></div>
-            <div className="w-2 h-2 rounded-full bg-gray-500"></div>
-            <div className="w-2 h-2 rounded-full bg-gray-500"></div>
-            <div className="w-2 h-2 rounded-full bg-gray-500"></div>
         </div>
       </div>
     </div>

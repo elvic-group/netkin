@@ -27,3 +27,13 @@ export interface PricingPlan {
   features: PricingFeature[];
   isPremium: boolean;
 }
+
+export interface Movie {
+  id: string;
+  title: string;
+  genre: string;
+  year: string;
+  author: string;
+  rating: string;
+  image: string;
+}
