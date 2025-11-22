@@ -4,6 +4,7 @@ export interface NavLink {
   label: string;
   href: string;
   active?: boolean;
+  target?: 'landing' | 'movies' | 'signin';
 }
 
 export interface Feature {

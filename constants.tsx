@@ -2,9 +2,10 @@ import { MonitorPlay, Smartphone, Coffee, WifiOff } from 'lucide-react';
 import { PricingPlan, Feature, NavLink, Movie } from './types';
 
 export const NAV_LINKS: NavLink[] = [
-  { label: 'MOVIES', href: '#' },
-  { label: 'TV SHOWS', href: '#' },
-  { label: 'NEWS', href: '#', active: true },
+  { label: 'HOME', href: '#', target: 'landing' },
+  { label: 'MOVIES', href: '#', target: 'movies' },
+  { label: 'TV SHOWS', href: '#', target: 'movies' },
+  { label: 'NEWS', href: '#', target: 'movies' },
 ];
 
 export const FEATURES: Feature[] = [
