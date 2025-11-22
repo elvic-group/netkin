@@ -71,14 +71,10 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage }) => {
           </button>
 
           <button 
-            onClick={(e) => handleNavClick(e, currentPage === 'signin' ? 'landing' : 'signin')}
-            className={`hidden md:block text-[10px] font-bold uppercase tracking-[0.2em] transition-all px-6 py-3 border-2 ${
-              currentPage === 'signin' 
-                ? 'border-netkin-red text-white bg-netkin-red hover:bg-red-700' 
-                : 'border-gray-600 text-gray-300 hover:text-white hover:border-white'
-            }`}
+            onClick={(e) => handleNavClick(e, 'signin')}
+            className="hidden md:block text-[10px] font-bold uppercase tracking-[0.2em] transition-all px-8 py-3 border border-white/20 text-netkin-red hover:bg-netkin-red hover:text-white hover:border-netkin-red bg-black/20"
           >
-            {currentPage === 'signin' ? 'Close' : 'Sign Up'}
+            Sign Up
           </button>
         </div>
       </nav>
@@ -100,10 +96,10 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage }) => {
             ))}
             <div className="w-12 h-1 bg-gray-800 mx-auto my-4"></div>
             <button 
-                onClick={(e) => handleNavClick(e, currentPage === 'signin' ? 'landing' : 'signin')}
-                className="text-lg font-bold uppercase tracking-widest text-white hover:text-netkin-red transition-colors"
+                onClick={(e) => handleNavClick(e, 'signin')}
+                className="text-lg font-bold uppercase tracking-widest text-netkin-red hover:text-white transition-colors"
             >
-                {currentPage === 'signin' ? 'Close' : 'Sign Up'}
+                Sign Up
             </button>
           </div>
         </div>

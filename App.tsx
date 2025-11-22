@@ -14,8 +14,8 @@ import Catalog from './components/Catalog';
 import { POPULAR_MOVIES, ACTION_MOVIES, ADVENTURE_MOVIES } from './constants';
 
 function App() {
-  // Default to 'catalog' to show the new design immediately as requested
-  const [page, setPage] = useState<'landing' | 'news' | 'catalog' | 'signin'>('catalog');
+  // Default to 'signin' to show the new design immediately as requested
+  const [page, setPage] = useState<'landing' | 'news' | 'catalog' | 'signin'>('signin');
 
   return (
     <div className="min-h-screen bg-netkin-dark font-sans text-white selection:bg-netkin-red selection:text-white flex flex-col">
