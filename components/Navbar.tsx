@@ -4,14 +4,14 @@ import { NAV_LINKS } from '../constants';
 import { NavLink } from '../types';
 
 interface NavbarProps {
-  onNavigate?: (page: 'landing' | 'movies' | 'signin') => void;
-  currentPage?: 'landing' | 'movies' | 'signin';
+  onNavigate?: (page: 'landing' | 'news' | 'catalog' | 'signin') => void;
+  currentPage?: 'landing' | 'news' | 'catalog' | 'signin';
 }
 
 const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const handleNavClick = (e: React.MouseEvent, target?: 'landing' | 'movies' | 'signin') => {
+  const handleNavClick = (e: React.MouseEvent, target?: 'landing' | 'news' | 'catalog' | 'signin') => {
     e.preventDefault();
     if (onNavigate && target) {
       onNavigate(target);

@@ -10,11 +10,12 @@ import Pricing from './components/Pricing';
 import Newsletter from './components/Newsletter';
 import Footer from './components/Footer';
 import SignIn from './components/SignIn';
+import Catalog from './components/Catalog';
 import { POPULAR_MOVIES, ACTION_MOVIES, ADVENTURE_MOVIES } from './constants';
 
 function App() {
-  // Default to 'landing' to match the requested design
-  const [page, setPage] = useState<'landing' | 'movies' | 'signin'>('landing');
+  // Default to 'catalog' to show the new design immediately as requested
+  const [page, setPage] = useState<'landing' | 'news' | 'catalog' | 'signin'>('catalog');
 
   return (
     <div className="min-h-screen bg-netkin-dark font-sans text-white selection:bg-netkin-red selection:text-white flex flex-col">
@@ -31,7 +32,7 @@ function App() {
           </>
         )}
 
-        {page === 'movies' && (
+        {page === 'news' && (
           <>
             <MovieHero />
             <LatestRelease />
@@ -45,6 +46,10 @@ function App() {
                 </button>
             </div>
           </>
+        )}
+
+        {page === 'catalog' && (
+          <Catalog />
         )}
 
         {page === 'signin' && (

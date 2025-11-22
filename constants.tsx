@@ -3,9 +3,16 @@ import { PricingPlan, Feature, NavLink, Movie } from './types';
 
 export const NAV_LINKS: NavLink[] = [
   { label: 'HOME', href: '#', target: 'landing' },
-  { label: 'MOVIES', href: '#', target: 'movies' },
-  { label: 'TV SHOWS', href: '#', target: 'movies' },
-  { label: 'NEWS', href: '#', target: 'movies' },
+  { label: 'MOVIES', href: '#', target: 'catalog' },
+  { label: 'TV SHOWS', href: '#', target: 'catalog' },
+  { label: 'NEWS', href: '#', target: 'news' },
+];
+
+export const GENRES = [
+    "POPULAR", "ACTION", "ADVENTURE", "ANIMATION", "BIOGRAPHY", "COMEDY",
+    "CRIME", "DOCUMENTARY", "DRAMA", "FAMILY", "FANTASY", "FILM-NOIR",
+    "HISTORY", "HORROR", "MUSIC", "MUSICAL", "MYSTERY", "ROMANCE",
+    "SCI-FI", "SHORT", "THRILL", "WAR", "WESTERN"
 ];
 
 export const FEATURES: Feature[] = [
@@ -228,4 +235,115 @@ export const ADVENTURE_MOVIES: Movie[] = [
     rating: '8.5',
     image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=500&q=80'
   },
+];
+
+export const CATALOG_MOVIES: Movie[] = [
+    {
+        id: 'c1',
+        title: 'THE FAIR WEATHER FELON',
+        genre: 'ADVENTURE',
+        year: '2018',
+        author: 'JOHANNES DOE',
+        rating: '8.5',
+        image: 'https://images.unsplash.com/photo-1516475429286-465d815a0df7?auto=format&fit=crop&w=500&q=80'
+    },
+    {
+        id: 'c2',
+        title: 'THE FAIR WEATHER FELON',
+        genre: 'ADVENTURE',
+        year: '2018',
+        author: 'JOHANNES DOE',
+        rating: '8.5',
+        image: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=500&q=80'
+    },
+    {
+        id: 'c3',
+        title: 'THE FAIR WEATHER FELON',
+        genre: 'ADVENTURE',
+        year: '2018',
+        author: 'JOHANNES DOE',
+        rating: '8.5',
+        image: 'https://images.unsplash.com/photo-1560130958-da5f965c2919?auto=format&fit=crop&w=500&q=80'
+    },
+    {
+        id: 'c4',
+        title: 'THE FAIR WEATHER FELON',
+        genre: 'ADVENTURE',
+        year: '2018',
+        author: 'JOHANNES DOE',
+        rating: '8.5',
+        image: 'https://images.unsplash.com/photo-1581338834647-b0fb40704e21?auto=format&fit=crop&w=500&q=80'
+    },
+    {
+        id: 'c5',
+        title: 'THE FAIR WEATHER FELON',
+        genre: 'ADVENTURE',
+        year: '2018',
+        author: 'JOHANNES DOE',
+        rating: '8.5',
+        image: 'https://images.unsplash.com/photo-1596727147705-54a9d6ed27e6?auto=format&fit=crop&w=500&q=80'
+    },
+    {
+        id: 'c6',
+        title: 'THE FAIR WEATHER FELON',
+        genre: 'ADVENTURE',
+        year: '2018',
+        author: 'JOHANNES DOE',
+        rating: '8.5',
+        image: 'https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?auto=format&fit=crop&w=500&q=80'
+    },
+    {
+        id: 'c7',
+        title: 'THE FAIR WEATHER FELON',
+        genre: 'ADVENTURE',
+        year: '2018',
+        author: 'JOHANNES DOE',
+        rating: '8.5',
+        image: 'https://images.unsplash.com/photo-1533518463841-d62e1fc91373?auto=format&fit=crop&w=500&q=80'
+    },
+    {
+        id: 'c8',
+        title: 'THE FAIR WEATHER FELON',
+        genre: 'ADVENTURE',
+        year: '2018',
+        author: 'JOHANNES DOE',
+        rating: '8.5',
+        image: 'https://images.unsplash.com/photo-1598899134739-24c46f58b8c0?auto=format&fit=crop&w=500&q=80'
+    },
+    {
+        id: 'c9',
+        title: 'THE FAIR WEATHER FELON',
+        genre: 'ADVENTURE',
+        year: '2018',
+        author: 'JOHANNES DOE',
+        rating: '8.5',
+        image: 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&w=500&q=80'
+    },
+    {
+        id: 'c10',
+        title: 'THE FAIR WEATHER FELON',
+        genre: 'ADVENTURE',
+        year: '2018',
+        author: 'JOHANNES DOE',
+        rating: '8.5',
+        image: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=500&q=80'
+    },
+    {
+        id: 'c11',
+        title: 'THE FAIR WEATHER FELON',
+        genre: 'ADVENTURE',
+        year: '2018',
+        author: 'JOHANNES DOE',
+        rating: '8.5',
+        image: 'https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?auto=format&fit=crop&w=500&q=80'
+    },
+    {
+        id: 'c12',
+        title: 'THE FAIR WEATHER FELON',
+        genre: 'ADVENTURE',
+        year: '2018',
+        author: 'JOHANNES DOE',
+        rating: '8.5',
+        image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=500&q=80'
+    }
 ];
