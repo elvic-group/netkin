@@ -5,9 +5,10 @@ import { Movie } from '../types';
 interface MovieSectionProps {
   title: string;
   movies: Movie[];
+  onMovieClick?: (movie: Movie) => void;
 }
 
-const MovieSection: React.FC<MovieSectionProps> = ({ title, movies }) => {
+const MovieSection: React.FC<MovieSectionProps> = ({ title, movies, onMovieClick }) => {
   return (
     <section className="bg-netkin-dark py-12 border-b border-white/5">
       <div className="container mx-auto px-8">
@@ -29,7 +30,11 @@ const MovieSection: React.FC<MovieSectionProps> = ({ title, movies }) => {
         {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6">
             {movies.map((movie) => (
-                <div key={movie.id} className="group cursor-pointer">
+                <div 
+                    key={movie.id} 
+                    className="group cursor-pointer"
+                    onClick={() => onMovieClick && onMovieClick(movie)}
+                >
                     {/* Image Container */}
                     <div className="relative aspect-[3/4] bg-[#1a1a1a] overflow-hidden mb-4">
                         <img 

@@ -1,10 +1,11 @@
+
 import { MonitorPlay, Smartphone, Coffee, WifiOff } from 'lucide-react';
 import { PricingPlan, Feature, NavLink, Movie } from './types';
 
 export const NAV_LINKS: NavLink[] = [
   { label: 'HOME', href: '#', target: 'landing' },
-  { label: 'MOVIES', href: '#', target: 'catalog' },
-  { label: 'TV SHOWS', href: '#', target: 'catalog' },
+  { label: 'MOVIES', href: '#', target: 'movies' },
+  { label: 'TV SHOWS', href: '#', target: 'tvshows' },
   { label: 'NEWS', href: '#', target: 'news' },
 ];
 
@@ -345,5 +346,116 @@ export const CATALOG_MOVIES: Movie[] = [
         author: 'JOHANNES DOE',
         rating: '8.5',
         image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=500&q=80'
+    }
+];
+
+export const CATALOG_TV_SHOWS: Movie[] = [
+    {
+        id: 'tv1',
+        title: 'STRANGER THINGS',
+        genre: 'SCI-FI',
+        year: '2016',
+        author: 'DUFFER BROS',
+        rating: '9.2',
+        image: 'https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?auto=format&fit=crop&w=500&q=80'
+    },
+    {
+        id: 'tv2',
+        title: 'BREAKING BAD',
+        genre: 'CRIME',
+        year: '2008',
+        author: 'VINCE GILLIGAN',
+        rating: '9.5',
+        image: 'https://images.unsplash.com/photo-1517604931442-71053e68cc23?auto=format&fit=crop&w=500&q=80'
+    },
+    {
+        id: 'tv3',
+        title: 'THE OFFICE',
+        genre: 'COMEDY',
+        year: '2005',
+        author: 'GREG DANIELS',
+        rating: '9.0',
+        image: 'https://images.unsplash.com/photo-1560130958-da5f965c2919?auto=format&fit=crop&w=500&q=80'
+    },
+    {
+        id: 'tv4',
+        title: 'GAME OF THRONES',
+        genre: 'FANTASY',
+        year: '2011',
+        author: 'D.B. WEISS',
+        rating: '9.3',
+        image: 'https://images.unsplash.com/photo-1516475429286-465d815a0df7?auto=format&fit=crop&w=500&q=80'
+    },
+    {
+        id: 'tv5',
+        title: 'THE MANDALORIAN',
+        genre: 'SCI-FI',
+        year: '2019',
+        author: 'JON FAVREAU',
+        rating: '8.7',
+        image: 'https://images.unsplash.com/photo-1596727147705-54a9d6ed27e6?auto=format&fit=crop&w=500&q=80'
+    },
+    {
+        id: 'tv6',
+        title: 'THE CROWN',
+        genre: 'DRAMA',
+        year: '2016',
+        author: 'PETER MORGAN',
+        rating: '8.6',
+        image: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=500&q=80'
+    },
+    {
+        id: 'tv7',
+        title: 'BLACK MIRROR',
+        genre: 'SCI-FI',
+        year: '2011',
+        author: 'CHARLIE BROOKER',
+        rating: '8.8',
+        image: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=500&q=80'
+    },
+    {
+        id: 'tv8',
+        title: 'THE WITCHER',
+        genre: 'FANTASY',
+        year: '2019',
+        author: 'LAUREN SCHMIDT',
+        rating: '8.2',
+        image: 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&w=500&q=80'
+    },
+    {
+        id: 'tv9',
+        title: 'FRIENDS',
+        genre: 'COMEDY',
+        year: '1994',
+        author: 'DAVID CRANE',
+        rating: '8.9',
+        image: 'https://images.unsplash.com/photo-1533518463841-d62e1fc91373?auto=format&fit=crop&w=500&q=80'
+    },
+    {
+        id: 'tv10',
+        title: 'SHERLOCK',
+        genre: 'CRIME',
+        year: '2010',
+        author: 'MARK GATISS',
+        rating: '9.1',
+        image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=500&q=80'
+    },
+    {
+        id: 'tv11',
+        title: 'WESTWORLD',
+        genre: 'SCI-FI',
+        year: '2016',
+        author: 'JONATHAN NOLAN',
+        rating: '8.5',
+        image: 'https://images.unsplash.com/photo-1531384698654-7f6e477ca221?auto=format&fit=crop&w=500&q=80'
+    },
+    {
+        id: 'tv12',
+        title: 'BETTER CALL SAUL',
+        genre: 'CRIME',
+        year: '2015',
+        author: 'VINCE GILLIGAN',
+        rating: '8.9',
+        image: 'https://images.unsplash.com/photo-1581338834647-b0fb40704e21?auto=format&fit=crop&w=500&q=80'
     }
 ];

@@ -1,8 +1,15 @@
+
 import React from 'react';
 import { ChevronDown, PlayCircle } from 'lucide-react';
-import { GENRES, CATALOG_MOVIES } from '../constants';
+import { GENRES } from '../constants';
+import { Movie } from '../types';
 
-const Catalog: React.FC = () => {
+interface CatalogProps {
+    onMovieClick?: (movie: Movie) => void;
+    movies: Movie[];
+}
+
+const Catalog: React.FC<CatalogProps> = ({ onMovieClick, movies }) => {
   return (
     <div className="container mx-auto px-4 md:px-8 py-32 md:pt-32 flex flex-col md:flex-row gap-8">
       {/* Sidebar */}
@@ -35,8 +42,12 @@ const Catalog: React.FC = () => {
 
           {/* Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
-              {CATALOG_MOVIES.map((movie) => (
-                 <div key={movie.id} className="group cursor-pointer">
+              {movies.map((movie) => (
+                 <div 
+                    key={movie.id} 
+                    className="group cursor-pointer"
+                    onClick={() => onMovieClick && onMovieClick(movie)}
+                 >
                     {/* Image Container */}
                     <div className="relative aspect-[3/4] bg-[#1a1a1a] overflow-hidden mb-4">
                         <img 

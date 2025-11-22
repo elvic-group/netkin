@@ -1,10 +1,16 @@
+
 import { LucideIcon } from 'lucide-react';
+
+export interface User {
+  email: string;
+  name?: string;
+}
 
 export interface NavLink {
   label: string;
   href: string;
   active?: boolean;
-  target?: 'landing' | 'news' | 'catalog' | 'signin';
+  target?: 'landing' | 'news' | 'movies' | 'tvshows' | 'signin';
 }
 
 export interface Feature {

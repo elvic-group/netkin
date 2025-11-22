@@ -1,17 +1,20 @@
+
 import React, { useState } from 'react';
-import { Search, Menu, X } from 'lucide-react';
+import { Search, Menu, X, LogOut, User as UserIcon } from 'lucide-react';
 import { NAV_LINKS } from '../constants';
-import { NavLink } from '../types';
+import { NavLink, User } from '../types';
 
 interface NavbarProps {
-  onNavigate?: (page: 'landing' | 'news' | 'catalog' | 'signin') => void;
-  currentPage?: 'landing' | 'news' | 'catalog' | 'signin';
+  onNavigate?: (page: 'landing' | 'news' | 'movies' | 'tvshows' | 'signin') => void;
+  currentPage?: 'landing' | 'news' | 'movies' | 'tvshows' | 'signin';
+  user?: User | null;
+  onLogout?: () => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage }) => {
+const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, user, onLogout }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const handleNavClick = (e: React.MouseEvent, target?: 'landing' | 'news' | 'catalog' | 'signin') => {
+  const handleNavClick = (e: React.MouseEvent, target?: 'landing' | 'news' | 'movies' | 'tvshows' | 'signin') => {
     e.preventDefault();
     if (onNavigate && target) {
       onNavigate(target);
@@ -31,7 +34,7 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage }) => {
         <div className="flex items-center gap-12">
           {/* Logo */}
           <button 
-            onClick={(e) => handleNavClick(e, 'landing')}
+            onClick={(e) => handleNavClick(e, user ? 'news' : 'landing')}
             className="flex items-center gap-2 group"
           >
              <span className="text-3xl font-black italic tracking-tighter text-white group-hover:scale-105 transition-transform">Netkin</span>
@@ -70,12 +73,28 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage }) => {
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
 
-          <button 
-            onClick={(e) => handleNavClick(e, 'signin')}
-            className="hidden md:block text-[10px] font-bold uppercase tracking-[0.2em] transition-all px-8 py-3 border border-white/20 text-netkin-red hover:bg-netkin-red hover:text-white hover:border-netkin-red bg-black/20"
-          >
-            Sign Up
-          </button>
+          {user ? (
+            <div className="hidden md:flex items-center gap-4">
+                <div className="flex items-center gap-2 text-white/80">
+                    <UserIcon size={16} />
+                    <span className="text-[10px] font-bold uppercase tracking-wider">{user.name || user.email}</span>
+                </div>
+                <button 
+                    onClick={onLogout}
+                    className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] transition-all px-4 py-2 border border-white/20 text-gray-400 hover:text-white hover:border-white/40"
+                >
+                    <LogOut size={14} />
+                    Log Out
+                </button>
+            </div>
+          ) : (
+            <button 
+                onClick={(e) => handleNavClick(e, 'signin')}
+                className="hidden md:block text-[10px] font-bold uppercase tracking-[0.2em] transition-all px-8 py-3 border border-white/20 text-netkin-red hover:bg-netkin-red hover:text-white hover:border-netkin-red bg-black/20"
+            >
+                Sign Up
+            </button>
+          )}
         </div>
       </nav>
 
@@ -95,12 +114,25 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage }) => {
               </button>
             ))}
             <div className="w-12 h-1 bg-gray-800 mx-auto my-4"></div>
-            <button 
-                onClick={(e) => handleNavClick(e, 'signin')}
-                className="text-lg font-bold uppercase tracking-widest text-netkin-red hover:text-white transition-colors"
-            >
-                Sign Up
-            </button>
+            
+            {user ? (
+                 <button 
+                    onClick={() => {
+                        if(onLogout) onLogout();
+                        setIsMenuOpen(false);
+                    }}
+                    className="text-lg font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors"
+                >
+                    Log Out
+                </button>
+            ) : (
+                <button 
+                    onClick={(e) => handleNavClick(e, 'signin')}
+                    className="text-lg font-bold uppercase tracking-widest text-netkin-red hover:text-white transition-colors"
+                >
+                    Sign Up
+                </button>
+            )}
           </div>
         </div>
       )}
