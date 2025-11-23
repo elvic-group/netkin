@@ -1,8 +1,13 @@
+
 import React from 'react';
 import { PlayCircle } from 'lucide-react';
 import { HERO_IMAGES } from '../constants';
 
-const MovieHero: React.FC = () => {
+interface MovieHeroProps {
+    onWatchClick?: () => void;
+}
+
+const MovieHero: React.FC<MovieHeroProps> = ({ onWatchClick }) => {
   return (
     <div className="relative w-full h-[800px] bg-netkin-dark overflow-hidden flex items-center">
       
@@ -19,9 +24,12 @@ const MovieHero: React.FC = () => {
          
          {/* Play Button Overlay on Image */}
          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <div className="rounded-full border-2 border-white/30 p-1 cursor-pointer hover:scale-110 transition-transform group">
+            <div 
+                onClick={onWatchClick}
+                className="rounded-full border-2 border-white/30 p-1 cursor-pointer hover:scale-110 transition-transform group"
+            >
                  <div className="bg-white/10 backdrop-blur-sm rounded-full p-4">
-                    <PlayCircle size={64} strokeWidth={1} className="text-white fill-white/20" />
+                    <PlayCircle size={64} strokeWidth={1} className="text-white fill-white/20 group-hover:text-netkin-red" />
                  </div>
             </div>
          </div>
@@ -49,7 +57,10 @@ const MovieHero: React.FC = () => {
           </p>
 
           {/* Button */}
-          <button className="bg-netkin-red hover:bg-red-700 text-white text-xs font-bold py-4 px-10 tracking-widest uppercase transition-colors shadow-lg mb-16">
+          <button 
+            onClick={onWatchClick}
+            className="bg-netkin-red hover:bg-red-700 text-white text-xs font-bold py-4 px-10 tracking-widest uppercase transition-colors shadow-lg mb-16"
+          >
             Watch More
           </button>
 

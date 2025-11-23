@@ -1,8 +1,13 @@
+
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { HERO_IMAGES } from '../constants';
 
-const Hero: React.FC = () => {
+interface HeroProps {
+  onCtaClick?: () => void;
+}
+
+const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
   return (
     <div className="relative w-full h-[850px] bg-black overflow-hidden group">
       {/* Background Image */}
@@ -36,7 +41,10 @@ const Hero: React.FC = () => {
           Exit whenever you want.
         </p>
 
-        <button className="bg-netkin-red hover:bg-red-700 text-white text-xs font-bold py-4 px-10 tracking-widest uppercase transition-all transform hover:scale-105 shadow-xl">
+        <button 
+            onClick={onCtaClick}
+            className="bg-netkin-red hover:bg-red-700 text-white text-xs font-bold py-4 px-10 tracking-widest uppercase transition-all transform hover:scale-105 shadow-xl"
+        >
           Try a Free Month
         </button>
       </div>

@@ -82,6 +82,16 @@ export const HERO_IMAGES = [
   "https://images.unsplash.com/photo-1533613220915-609f661a6fe1?auto=format&fit=crop&w=300&q=80",
 ];
 
+export const HERO_MOVIE: Movie = {
+  id: 'hero1',
+  title: 'CONGOLESE',
+  genre: 'DOCUMENTARY',
+  year: '2018',
+  author: 'JOHANNES DOE',
+  rating: '8.9',
+  image: 'https://images.unsplash.com/photo-1503951914296-3a5a5b01151e?auto=format&fit=crop&w=1500&q=80'
+};
+
 export const LATEST_MOVIES: Movie[] = [
   {
     id: 'l1',

@@ -1,18 +1,23 @@
 
-import React, { useState, useEffect, useRef } from 'react';
-import { X, ChevronDown, ChevronRight, Search, Play, Pause, Volume2, VolumeX, Maximize, Minimize, MessageSquare, PlayCircle, Share2, Check } from 'lucide-react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { X, ChevronDown, ChevronRight, Search, Play, Pause, Volume2, VolumeX, Maximize, Minimize, MessageSquare, PlayCircle, Share2, Check, Plus, Sparkles, Download, WifiOff, Film } from 'lucide-react';
 import { Movie } from '../types';
-import { NAV_LINKS } from '../constants';
+import { NAV_LINKS, CATALOG_MOVIES, CATALOG_TV_SHOWS, POPULAR_MOVIES, ACTION_MOVIES, ADVENTURE_MOVIES, LATEST_MOVIES } from '../constants';
+import MoviePosterGenerator from './MoviePosterGenerator';
+import MovieVideoGenerator from './MovieVideoGenerator';
 
 interface MovieDetailsProps {
   movie: Movie;
   onClose: () => void;
+  watchlist?: string[];
+  onToggleWatchlist?: (movieId: string) => void;
+  onMovieClick?: (movie: Movie) => void;
 }
 
 // Sample video URL for demonstration
 const VIDEO_URL = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
 
-const MovieDetails: React.FC<MovieDetailsProps> = ({ movie, onClose }) => {
+const MovieDetails: React.FC<MovieDetailsProps> = ({ movie, onClose, watchlist = [], onToggleWatchlist, onMovieClick }) => {
   const [viewState, setViewState] = useState<'overview' | 'loading' | 'playing'>('overview');
   const [progress, setProgress] = useState(0);
   
@@ -30,6 +35,43 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movie, onClose }) => {
 
   // Share State
   const [isCopied, setIsCopied] = useState(false);
+
+  // Generator State
+  const [showGenerator, setShowGenerator] = useState(false);
+  const [showVideoGenerator, setShowVideoGenerator] = useState(false);
+
+  // Download State
+  const [downloadStatus, setDownloadStatus] = useState<'idle' | 'downloading' | 'downloaded'>('idle');
+
+  const isInWatchlist = watchlist.includes(movie.id);
+
+  // Reset state when movie changes
+  useEffect(() => {
+    setViewState('overview');
+    setProgress(0);
+    setIsPlaying(false);
+    setShowGenerator(false);
+    setShowVideoGenerator(false);
+    setDownloadStatus('idle');
+  }, [movie]);
+
+  // Filter Similar Movies (Memoized for performance)
+  const similarMovies = useMemo(() => {
+      const allMovies = [...CATALOG_MOVIES, ...CATALOG_TV_SHOWS, ...POPULAR_MOVIES, ...ACTION_MOVIES, ...ADVENTURE_MOVIES, ...LATEST_MOVIES];
+      const uniqueMovies = Array.from(new Map(allMovies.map(m => [m.id, m])).values());
+      return uniqueMovies
+        .filter(m => m.genre === movie.genre && m.id !== movie.id)
+        .slice(0, 6); // Increased from 4 to 6
+  }, [movie.genre, movie.id]);
+
+  // Mock Cast Data
+  const castMembers = useMemo(() => [
+      { name: movie.author, role: 'Director' },
+      { name: 'Johannes Doe', role: 'Lead Actor' },
+      { name: 'Sarah Smith', role: 'Support' },
+      { name: 'Michael Bay-ish', role: 'Producer' },
+      { name: 'Emily Blunt-like', role: 'Actress' }
+  ], [movie]);
 
   // Loading Simulation
   useEffect(() => {
@@ -177,6 +219,16 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movie, onClose }) => {
     }
   };
 
+  const handleDownload = () => {
+      if (downloadStatus === 'idle') {
+          setDownloadStatus('downloading');
+          // Simulate download
+          setTimeout(() => {
+              setDownloadStatus('downloaded');
+          }, 2500);
+      }
+  };
+
   const formatTime = (seconds: number) => {
     if (isNaN(seconds)) return "0:00:00";
     const h = Math.floor(seconds / 3600);
@@ -287,97 +339,172 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movie, onClose }) => {
 
       {/* === OVERVIEW STATE === */}
       {viewState === 'overview' && (
-        <div className="absolute inset-0 flex items-center justify-end px-8 md:px-24 z-10">
-           <div className="w-full max-w-xl relative pt-10 md:pt-20">
-              
-              {/* Tabs */}
-              <div className="flex gap-8 mb-8 border-b border-white/10">
-                  <button className="pb-4 border-b-2 border-netkin-red text-xs font-bold uppercase tracking-widest text-white">
-                      Overview
-                  </button>
-                  <button className="pb-4 border-b-2 border-transparent text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors">
-                      Details
-                  </button>
-              </div>
-
-              {/* Tags */}
-              <div className="flex gap-3 mb-6">
-                  <span className="px-3 py-1 border border-white/20 text-[10px] font-bold uppercase tracking-wider text-white">
-                      {movie.genre}
-                  </span>
-                   <span className="px-3 py-1 border border-white/20 text-[10px] font-bold uppercase tracking-wider text-white">
-                      PG
-                  </span>
-                   <span className="px-3 py-1 bg-netkin-red text-[10px] font-bold uppercase tracking-wider text-white">
-                      {movie.rating}
-                  </span>
-              </div>
-
-              {/* Title */}
-              <h1 className="text-5xl md:text-6xl font-black uppercase leading-[0.9] tracking-tight mb-2">
-                  {movie.title}
-              </h1>
-              <h2 className="text-4xl md:text-5xl font-black uppercase leading-[0.9] tracking-tight mb-6 text-gray-400">
-                  With {movie.author}
-              </h2>
-
-              {/* Meta */}
-              <p className="text-[10px] font-bold text-netkin-red uppercase tracking-widest mb-6">
-                  {movie.year} <span className="text-gray-500 mx-2">{movie.author}</span> <span className="text-white">2H 44MIN</span>
-              </p>
-
-              {/* Description */}
-              <p className="text-sm text-gray-300 leading-relaxed mb-10 max-w-md">
-                  Dom braves the remote wilderness of Namibia while on the hunt for Africa's largest, deadliest scorpion-parabuthus villosus, commonly known as the black hairy thick-tailed scorpion.
-                  <br /><br />
-                  This beast can not only kill a human but also spray its venom.
-              </p>
-
-              {/* Actions */}
-              <div className="flex items-center gap-4 mb-12">
-                  <button 
-                    onClick={handleWatchClick}
-                    className="bg-netkin-red hover:bg-red-700 text-white text-xs font-bold py-4 px-10 tracking-widest uppercase transition-colors shadow-lg"
-                  >
-                      Watch Trailer
-                  </button>
-
-                  <div className="flex border border-white/20">
-                      <button className="flex items-center px-4 py-3 bg-transparent text-[10px] font-bold text-white tracking-widest uppercase hover:bg-white/5">
-                          1080P <ChevronDown size={12} className="ml-2" />
+        <div className="absolute inset-0 z-10 overflow-y-auto no-scrollbar">
+           <div className="min-h-full flex items-center justify-end px-8 md:px-24 py-24">
+               <div className="w-full max-w-xl relative pt-10">
+                  
+                  {/* Tabs */}
+                  <div className="flex gap-8 mb-8 border-b border-white/10">
+                      <button className="pb-4 border-b-2 border-netkin-red text-xs font-bold uppercase tracking-widest text-white">
+                          Overview
+                      </button>
+                      <button className="pb-4 border-b-2 border-transparent text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors">
+                          Details
+                      </button>
+                      <button className="pb-4 border-b-2 border-transparent text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors">
+                          Reviews
                       </button>
                   </div>
 
-                   <div className="flex border border-white/20 px-4 py-3">
-                       <span className="text-[10px] font-bold text-white tracking-widest uppercase">
-                           247/600 Peers
-                       </span>
+                  {/* Tags */}
+                  <div className="flex gap-3 mb-6">
+                      <span className="px-3 py-1 border border-white/20 text-[10px] font-bold uppercase tracking-wider text-white">
+                          {movie.genre}
+                      </span>
+                      <span className="px-3 py-1 border border-white/20 text-[10px] font-bold uppercase tracking-wider text-white">
+                          PG
+                      </span>
+                      <span className="px-3 py-1 bg-netkin-red text-[10px] font-bold uppercase tracking-wider text-white">
+                          {movie.rating}
+                      </span>
                   </div>
 
-                   <button 
-                      onClick={handleShare}
-                      className="flex items-center justify-center border border-white/20 w-10 h-10 md:w-auto md:px-4 md:h-auto md:py-3 bg-transparent text-white hover:bg-white/5 transition-colors"
-                      title="Share"
-                   >
-                      {isCopied ? <Check size={16} className="text-netkin-red" /> : <Share2 size={16} />}
-                  </button>
-              </div>
+                  {/* Title */}
+                  <h1 className="text-5xl md:text-6xl font-black uppercase leading-[0.9] tracking-tight mb-2">
+                      {movie.title}
+                  </h1>
+                  <h2 className="text-4xl md:text-5xl font-black uppercase leading-[0.9] tracking-tight mb-6 text-gray-400">
+                      With {movie.author}
+                  </h2>
 
-              {/* Thumbnails */}
-              <div className="flex gap-4">
-                  <div className="w-32 h-20 bg-gray-800 overflow-hidden">
-                       <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=300&q=80" className="w-full h-full object-cover opacity-60 hover:opacity-100 transition-opacity cursor-pointer" />
-                  </div>
-                  <div className="w-32 h-20 bg-gray-800 overflow-hidden">
-                       <img src="https://images.unsplash.com/photo-1595769816263-9b910be24d5f?auto=format&fit=crop&w=300&q=80" className="w-full h-full object-cover opacity-60 hover:opacity-100 transition-opacity cursor-pointer" />
-                  </div>
-                   <div className="w-10 flex items-center justify-center">
-                        <button className="p-2 rounded-full hover:bg-white/10 transition-colors">
-                            <ChevronRight size={20} />
+                  {/* Meta */}
+                  <p className="text-[10px] font-bold text-netkin-red uppercase tracking-widest mb-6">
+                      {movie.year} <span className="text-gray-500 mx-2">{movie.author}</span> <span className="text-white">2H 44MIN</span>
+                  </p>
+
+                  {/* Description */}
+                  <p className="text-sm text-gray-300 leading-relaxed mb-10 max-w-md">
+                      Dom braves the remote wilderness of Namibia while on the hunt for Africa's largest, deadliest scorpion-parabuthus villosus, commonly known as the black hairy thick-tailed scorpion.
+                      <br /><br />
+                      This beast can not only kill a human but also spray its venom.
+                  </p>
+
+                  {/* Actions */}
+                  <div className="flex items-center gap-4 mb-12 flex-wrap">
+                      <button 
+                        onClick={handleWatchClick}
+                        className="bg-netkin-red hover:bg-red-700 text-white text-xs font-bold py-4 px-10 tracking-widest uppercase transition-colors shadow-lg"
+                      >
+                          Watch Trailer
+                      </button>
+
+                      <div className="flex border border-white/20">
+                          <button className="flex items-center px-4 py-3 bg-transparent text-[10px] font-bold text-white tracking-widest uppercase hover:bg-white/5">
+                              1080P <ChevronDown size={12} className="ml-2" />
+                          </button>
+                      </div>
+
+                      <div className="flex border border-white/20 px-4 py-3">
+                          <span className="text-[10px] font-bold text-white tracking-widest uppercase">
+                              247/600 Peers
+                          </span>
+                      </div>
+
+                      {/* Watchlist Button */}
+                      {onToggleWatchlist && (
+                        <button
+                            onClick={(e) => { e.stopPropagation(); onToggleWatchlist(movie.id); }}
+                            className={`flex items-center justify-center border border-white/20 w-10 h-10 md:w-auto md:px-4 md:h-auto md:py-3 transition-colors ${isInWatchlist ? 'bg-netkin-red border-netkin-red text-white' : 'bg-transparent text-white hover:bg-white/5'}`}
+                            title={isInWatchlist ? "Remove from Watchlist" : "Add to Watchlist"}
+                        >
+                            {isInWatchlist ? <Check size={16} /> : <Plus size={16} />}
                         </button>
-                   </div>
-              </div>
+                      )}
 
+                      {/* Download Button */}
+                      <button 
+                          onClick={handleDownload}
+                          className={`flex items-center justify-center border border-white/20 w-10 h-10 md:w-auto md:px-4 md:h-auto md:py-3 bg-transparent transition-colors ${downloadStatus === 'downloaded' ? 'text-green-500 border-green-500/50' : 'text-white hover:bg-white/5'}`}
+                          title="Download for Offline Viewing"
+                          disabled={downloadStatus === 'downloading'}
+                      >
+                          {downloadStatus === 'downloading' ? (
+                              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                          ) : downloadStatus === 'downloaded' ? (
+                              <div className="flex items-center gap-2"><WifiOff size={16} /> <span className="hidden md:inline text-[8px] uppercase font-bold">Downloaded</span></div>
+                          ) : (
+                              <Download size={16} />
+                          )}
+                      </button>
+
+                      {/* Share Button */}
+                      <button 
+                          onClick={handleShare}
+                          className="flex items-center justify-center border border-white/20 w-10 h-10 md:w-auto md:px-4 md:h-auto md:py-3 bg-transparent text-white hover:bg-white/5 transition-colors"
+                          title="Share"
+                      >
+                          {isCopied ? <Check size={16} className="text-netkin-red" /> : <Share2 size={16} />}
+                      </button>
+
+                      {/* AI Poster Generator Button */}
+                      <button 
+                          onClick={() => setShowGenerator(true)}
+                          className="flex items-center justify-center border border-white/20 w-10 h-10 md:w-auto md:px-4 md:h-auto md:py-3 bg-transparent text-white hover:bg-white/5 transition-colors group"
+                          title="Remix Poster with AI"
+                      >
+                          <Sparkles size={16} className="group-hover:text-netkin-red transition-colors" />
+                      </button>
+
+                      {/* AI Video Generator Button */}
+                      <button 
+                          onClick={() => setShowVideoGenerator(true)}
+                          className="flex items-center justify-center border border-white/20 w-10 h-10 md:w-auto md:px-4 md:h-auto md:py-3 bg-transparent text-white hover:bg-white/5 transition-colors group"
+                          title="Generate Teaser with Veo"
+                      >
+                          <Film size={16} className="group-hover:text-netkin-red transition-colors" />
+                      </button>
+                  </div>
+
+                  {/* TOP CAST */}
+                  <div className="mb-10 border-t border-white/10 pt-6">
+                      <h3 className="text-xs font-bold uppercase tracking-widest text-white mb-4">Top Cast</h3>
+                      <div className="flex gap-4 overflow-x-auto pb-2 no-scrollbar">
+                          {castMembers.map((person, idx) => (
+                              <div key={idx} className="flex items-center gap-3 min-w-[140px] bg-white/5 p-2 pr-4 rounded-sm hover:bg-white/10 transition-colors cursor-default">
+                                  <div className="w-8 h-8 rounded-full bg-gray-700 overflow-hidden">
+                                      <img src={`https://i.pravatar.cc/100?u=${movie.id}${idx}`} className="w-full h-full object-cover opacity-80" alt={person.name} />
+                                  </div>
+                                  <div className="flex flex-col">
+                                      <span className="text-[9px] font-bold text-white uppercase tracking-wide">{person.name}</span>
+                                      <span className="text-[8px] font-medium text-gray-500 uppercase tracking-wider">{person.role}</span>
+                                  </div>
+                              </div>
+                          ))}
+                      </div>
+                  </div>
+
+                  {/* MORE LIKE THIS SECTION */}
+                  {similarMovies.length > 0 && (
+                    <div className="pt-8 border-t border-white/10">
+                        <h3 className="text-sm font-bold uppercase tracking-widest text-white mb-6">More Like This</h3>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            {similarMovies.map(m => (
+                                <div key={m.id} onClick={() => onMovieClick && onMovieClick(m)} className="cursor-pointer group">
+                                    <div className="aspect-video overflow-hidden mb-2 bg-gray-900 relative">
+                                        <img src={m.image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80 group-hover:opacity-100"/>
+                                        <div className="absolute top-1 right-1 bg-netkin-red px-1">
+                                            <span className="text-[8px] font-bold text-white">{m.rating}</span>
+                                        </div>
+                                    </div>
+                                    <h4 className="text-[10px] font-bold uppercase text-gray-400 group-hover:text-netkin-red transition-colors truncate">{m.title}</h4>
+                                    <span className="text-[9px] text-gray-600 uppercase font-bold">{m.year}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                  )}
+
+               </div>
            </div>
         </div>
       )}
@@ -480,6 +607,16 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movie, onClose }) => {
                 </div>
             </div>
         </div>
+      )}
+
+      {/* === POSTER GENERATOR MODAL === */}
+      {showGenerator && (
+          <MoviePosterGenerator movie={movie} onClose={() => setShowGenerator(false)} />
+      )}
+
+      {/* === VIDEO GENERATOR MODAL === */}
+      {showVideoGenerator && (
+          <MovieVideoGenerator movie={movie} onClose={() => setShowVideoGenerator(false)} />
       )}
 
     </div>

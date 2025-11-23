@@ -1,8 +1,13 @@
+
 import React from 'react';
 import { Check, X } from 'lucide-react';
 import { PRICING_PLANS } from '../constants';
 
-const Pricing: React.FC = () => {
+interface PricingProps {
+  onSubscribe?: (planName: string) => void;
+}
+
+const Pricing: React.FC<PricingProps> = ({ onSubscribe }) => {
   return (
     <section className="bg-netkin-dark pb-24 pt-12">
       <div className="container mx-auto px-4 max-w-5xl">
@@ -56,6 +61,7 @@ const Pricing: React.FC = () => {
               </div>
 
               <button 
+                onClick={() => onSubscribe && onSubscribe(plan.name)}
                 className={`w-full py-4 text-xs font-bold uppercase tracking-widest border-2 transition-colors
                   ${plan.isPremium 
                     ? 'border-white bg-transparent text-white hover:bg-white hover:text-netkin-red' 

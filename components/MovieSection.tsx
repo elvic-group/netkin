@@ -1,14 +1,17 @@
+
 import React from 'react';
-import { ChevronRight, PlayCircle } from 'lucide-react';
+import { ChevronRight, PlayCircle, Plus, Check } from 'lucide-react';
 import { Movie } from '../types';
 
 interface MovieSectionProps {
   title: string;
   movies: Movie[];
   onMovieClick?: (movie: Movie) => void;
+  watchlist?: string[];
+  onToggleWatchlist?: (movieId: string) => void;
 }
 
-const MovieSection: React.FC<MovieSectionProps> = ({ title, movies, onMovieClick }) => {
+const MovieSection: React.FC<MovieSectionProps> = ({ title, movies, onMovieClick, watchlist = [], onToggleWatchlist }) => {
   return (
     <section className="bg-netkin-dark py-12 border-b border-white/5">
       <div className="container mx-auto px-8">
@@ -29,7 +32,9 @@ const MovieSection: React.FC<MovieSectionProps> = ({ title, movies, onMovieClick
 
         {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6">
-            {movies.map((movie) => (
+            {movies.map((movie) => {
+                const isInWatchlist = watchlist.includes(movie.id);
+                return (
                 <div 
                     key={movie.id} 
                     className="group cursor-pointer"
@@ -44,9 +49,22 @@ const MovieSection: React.FC<MovieSectionProps> = ({ title, movies, onMovieClick
                         />
                         
                         {/* Rating Badge */}
-                        <div className="absolute top-0 right-0 bg-netkin-red px-2 py-2">
+                        <div className="absolute top-0 right-0 bg-netkin-red px-2 py-2 z-10">
                             <span className="text-white text-xs font-bold block">{movie.rating}</span>
                         </div>
+
+                        {/* Watchlist Button (Functional) */}
+                        {onToggleWatchlist && (
+                            <div className="absolute top-2 left-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <button 
+                                    onClick={(e) => { e.stopPropagation(); onToggleWatchlist(movie.id); }}
+                                    className={`p-2 rounded-full transition-colors ${isInWatchlist ? 'bg-netkin-red text-white' : 'bg-black/60 text-white hover:bg-netkin-red'}`}
+                                    title={isInWatchlist ? "Remove from Watchlist" : "Add to Watchlist"}
+                                >
+                                    {isInWatchlist ? <Check size={16} strokeWidth={3} /> : <Plus size={16} strokeWidth={3} />}
+                                </button>
+                            </div>
+                        )}
 
                         {/* Hover Play Overlay */}
                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20">
@@ -67,7 +85,7 @@ const MovieSection: React.FC<MovieSectionProps> = ({ title, movies, onMovieClick
                         </p>
                     </div>
                 </div>
-            ))}
+            )})}
              {/* Navigation Arrow (Visual only as per design grid) */}
              <div className="hidden md:flex items-center justify-center">
                 <button className="text-white/20 hover:text-white transition-colors">
