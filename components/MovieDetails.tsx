@@ -339,7 +339,8 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movie, onClose, watchlist =
       setNotification({ message: `Connected to ${device}`, type: 'success' });
   }
 
-  const stopCasting = () => {
+  const stopCasting = (e?: React.MouseEvent) => {
+      e?.stopPropagation();
       setCastingTo(null);
       setIsCastModalOpen(false);
       setNotification({ message: 'Casting stopped', type: 'success' });
@@ -531,15 +532,25 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movie, onClose, watchlist =
         onClick={(e) => { e.stopPropagation(); togglePlay(); }}
       />
 
-      {/* === CASTING OVERLAY === */}
+      {/* === CASTING STATUS (Non-Blocking) === */}
       {castingTo && viewState === 'playing' && (
-          <div className="absolute inset-0 z-40 bg-black/90 flex flex-col items-center justify-center animate-in fade-in duration-500">
-              <div className="relative">
-                  <div className="absolute inset-0 bg-netkin-red/20 blur-xl rounded-full animate-pulse"></div>
-                  <Cast size={64} className="text-netkin-red relative z-10" />
-              </div>
-              <h3 className="text-xl font-bold uppercase tracking-widest text-white mt-8 mb-2">Casting to {castingTo}</h3>
-              <p className="text-gray-400 text-xs uppercase tracking-wider">Video is playing on your external display</p>
+          <div className="absolute top-24 left-8 z-40 animate-in fade-in duration-500">
+             <div className="bg-black/60 backdrop-blur-md border border-white/10 px-6 py-3 rounded-full flex items-center gap-4 shadow-xl">
+                 <div className="relative">
+                     <div className="absolute inset-0 bg-netkin-red/20 blur-sm rounded-full animate-pulse"></div>
+                     <Cast size={20} className="text-netkin-red relative z-10" />
+                 </div>
+                 <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Casting to</p>
+                    <p className="text-xs font-bold uppercase text-white tracking-wider">{castingTo}</p>
+                 </div>
+                 <button 
+                    onClick={stopCasting}
+                    className="ml-2 p-1 text-white hover:text-netkin-red transition-colors"
+                 >
+                     <X size={14} />
+                 </button>
+             </div>
           </div>
       )}
 
@@ -906,7 +917,8 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movie, onClose, watchlist =
                     <div className="relative">
                         <button 
                             onClick={toggleCastModal} 
-                            className={`transition-colors ${castingTo ? 'text-netkin-red' : 'text-white hover:text-netkin-red'}`}
+                            className={`transition-colors p-2 hover:bg-white/10 rounded-full ${castingTo ? 'text-netkin-red' : 'text-white hover:text-netkin-red'}`}
+                            title="Cast to device"
                         >
                             <Cast size={20} fill={castingTo ? "currentColor" : "none"} />
                         </button>
@@ -920,7 +932,7 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movie, onClose, watchlist =
                                     {CAST_DEVICES.map(device => (
                                         <button 
                                             key={device} 
-                                            onClick={() => handleCast(device)}
+                                            onClick={(e) => { e.stopPropagation(); handleCast(device); }}
                                             className={`text-left px-4 py-3 text-xs font-bold hover:bg-white/10 transition-colors ${castingTo === device ? 'text-netkin-red' : 'text-white'}`}
                                         >
                                             {device}
