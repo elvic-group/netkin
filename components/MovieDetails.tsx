@@ -390,79 +390,85 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movie, onClose, watchlist =
                   </p>
 
                   {/* Actions */}
-                  <div className="flex items-center gap-4 mb-12 flex-wrap">
-                      <button 
-                        onClick={handleWatchClick}
-                        className="bg-netkin-red hover:bg-red-700 text-white text-xs font-bold py-4 px-10 tracking-widest uppercase transition-colors shadow-lg"
-                      >
-                          Watch Trailer
-                      </button>
+                  <div className="flex flex-col gap-4 mb-12">
+                      {/* Row 1: Primary Actions */}
+                      <div className="flex items-stretch gap-4 flex-wrap">
+                          <button 
+                            onClick={handleWatchClick}
+                            className="bg-netkin-red hover:bg-red-700 text-white text-xs font-bold px-8 h-[50px] tracking-widest uppercase transition-colors shadow-lg flex items-center justify-center"
+                          >
+                              Watch Trailer
+                          </button>
 
-                      <div className="flex border border-white/20">
-                          <button className="flex items-center px-4 py-3 bg-transparent text-[10px] font-bold text-white tracking-widest uppercase hover:bg-white/5">
-                              1080P <ChevronDown size={12} className="ml-2" />
+                          <div className="flex border border-white/20 hover:border-white/40 transition-colors h-[50px]">
+                              <button className="flex items-center px-6 bg-transparent text-[10px] font-bold text-white tracking-widest uppercase h-full">
+                                  1080P <ChevronDown size={12} className="ml-2" />
+                              </button>
+                          </div>
+
+                          <div className="flex border border-white/20 px-6 items-center hover:border-white/40 transition-colors h-[50px]">
+                              <span className="text-[10px] font-bold text-white tracking-widest uppercase">
+                                  247/600 Peers
+                              </span>
+                          </div>
+
+                          {/* Watchlist Button */}
+                          {onToggleWatchlist && (
+                            <button
+                                onClick={(e) => { e.stopPropagation(); onToggleWatchlist(movie.id); }}
+                                className={`w-[50px] h-[50px] border border-white/20 flex items-center justify-center transition-colors ${isInWatchlist ? 'bg-white/10 text-netkin-red border-white/40' : 'hover:bg-white/5 text-white hover:border-white/40'}`}
+                                title={isInWatchlist ? "Remove from Watchlist" : "Add to Watchlist"}
+                            >
+                                {isInWatchlist ? <Check size={20} /> : <Plus size={20} />}
+                            </button>
+                          )}
+                      </div>
+
+                      {/* Row 2: Secondary Tools */}
+                      <div className="flex items-center gap-4">
+                          {/* Download Button */}
+                          <button 
+                              onClick={handleDownload}
+                              className={`w-[50px] h-[50px] border border-white/20 flex items-center justify-center transition-colors ${downloadStatus === 'downloaded' ? 'text-green-500 border-green-500/50' : 'text-white hover:bg-white/5 hover:border-white/40'}`}
+                              title="Download for Offline Viewing"
+                              disabled={downloadStatus === 'downloading'}
+                          >
+                              {downloadStatus === 'downloading' ? (
+                                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                              ) : downloadStatus === 'downloaded' ? (
+                                  <WifiOff size={20} />
+                              ) : (
+                                  <Download size={20} />
+                              )}
+                          </button>
+
+                          {/* Share Button */}
+                          <button 
+                              onClick={handleShare}
+                              className="w-[50px] h-[50px] border border-white/20 flex items-center justify-center text-white hover:bg-white/5 hover:border-white/40 transition-colors"
+                              title="Share"
+                          >
+                              {isCopied ? <Check size={20} className="text-netkin-red" /> : <Share2 size={20} />}
+                          </button>
+
+                          {/* AI Poster Generator Button */}
+                          <button 
+                              onClick={() => setShowGenerator(true)}
+                              className="w-[50px] h-[50px] border border-white/20 flex items-center justify-center text-white hover:bg-white/5 hover:border-white/40 transition-colors group"
+                              title="Remix Poster with AI"
+                          >
+                              <Sparkles size={20} className="group-hover:text-netkin-red transition-colors" />
+                          </button>
+
+                          {/* AI Video Generator Button */}
+                          <button 
+                              onClick={() => setShowVideoGenerator(true)}
+                              className="w-[50px] h-[50px] border border-white/20 flex items-center justify-center text-white hover:bg-white/5 hover:border-white/40 transition-colors group"
+                              title="Generate Teaser with Veo"
+                          >
+                              <Film size={20} className="group-hover:text-netkin-red transition-colors" />
                           </button>
                       </div>
-
-                      <div className="flex border border-white/20 px-4 py-3">
-                          <span className="text-[10px] font-bold text-white tracking-widest uppercase">
-                              247/600 Peers
-                          </span>
-                      </div>
-
-                      {/* Watchlist Button */}
-                      {onToggleWatchlist && (
-                        <button
-                            onClick={(e) => { e.stopPropagation(); onToggleWatchlist(movie.id); }}
-                            className={`flex items-center justify-center border border-white/20 w-10 h-10 md:w-auto md:px-4 md:h-auto md:py-3 transition-colors ${isInWatchlist ? 'bg-netkin-red border-netkin-red text-white' : 'bg-transparent text-white hover:bg-white/5'}`}
-                            title={isInWatchlist ? "Remove from Watchlist" : "Add to Watchlist"}
-                        >
-                            {isInWatchlist ? <Check size={16} /> : <Plus size={16} />}
-                        </button>
-                      )}
-
-                      {/* Download Button */}
-                      <button 
-                          onClick={handleDownload}
-                          className={`flex items-center justify-center border border-white/20 w-10 h-10 md:w-auto md:px-4 md:h-auto md:py-3 bg-transparent transition-colors ${downloadStatus === 'downloaded' ? 'text-green-500 border-green-500/50' : 'text-white hover:bg-white/5'}`}
-                          title="Download for Offline Viewing"
-                          disabled={downloadStatus === 'downloading'}
-                      >
-                          {downloadStatus === 'downloading' ? (
-                              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                          ) : downloadStatus === 'downloaded' ? (
-                              <div className="flex items-center gap-2"><WifiOff size={16} /> <span className="hidden md:inline text-[8px] uppercase font-bold">Downloaded</span></div>
-                          ) : (
-                              <Download size={16} />
-                          )}
-                      </button>
-
-                      {/* Share Button */}
-                      <button 
-                          onClick={handleShare}
-                          className="flex items-center justify-center border border-white/20 w-10 h-10 md:w-auto md:px-4 md:h-auto md:py-3 bg-transparent text-white hover:bg-white/5 transition-colors"
-                          title="Share"
-                      >
-                          {isCopied ? <Check size={16} className="text-netkin-red" /> : <Share2 size={16} />}
-                      </button>
-
-                      {/* AI Poster Generator Button */}
-                      <button 
-                          onClick={() => setShowGenerator(true)}
-                          className="flex items-center justify-center border border-white/20 w-10 h-10 md:w-auto md:px-4 md:h-auto md:py-3 bg-transparent text-white hover:bg-white/5 transition-colors group"
-                          title="Remix Poster with AI"
-                      >
-                          <Sparkles size={16} className="group-hover:text-netkin-red transition-colors" />
-                      </button>
-
-                      {/* AI Video Generator Button */}
-                      <button 
-                          onClick={() => setShowVideoGenerator(true)}
-                          className="flex items-center justify-center border border-white/20 w-10 h-10 md:w-auto md:px-4 md:h-auto md:py-3 bg-transparent text-white hover:bg-white/5 transition-colors group"
-                          title="Generate Teaser with Veo"
-                      >
-                          <Film size={16} className="group-hover:text-netkin-red transition-colors" />
-                      </button>
                   </div>
 
                   {/* TOP CAST */}
