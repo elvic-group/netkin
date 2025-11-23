@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { LATEST_MOVIES } from '../constants';
 import { Movie } from '../types';
@@ -9,8 +9,27 @@ interface LatestReleaseProps {
 }
 
 const LatestRelease: React.FC<LatestReleaseProps> = ({ onMovieClick }) => {
+  const [activeIndex, setActiveIndex] = useState(1);
+
+  const handlePrev = () => {
+    setActiveIndex((prev) => (prev === 0 ? LATEST_MOVIES.length - 1 : prev - 1));
+  };
+
+  const handleNext = () => {
+    setActiveIndex((prev) => (prev === LATEST_MOVIES.length - 1 ? 0 : prev + 1));
+  };
+
+  const getMovie = (offset: number) => {
+      const index = (activeIndex + offset + LATEST_MOVIES.length) % LATEST_MOVIES.length;
+      return LATEST_MOVIES[index];
+  };
+
+  const prevMovie = getMovie(-1);
+  const currentMovie = getMovie(0);
+  const nextMovie = getMovie(1);
+
   return (
-    <section className="bg-[#111112] py-16 border-t border-white/5">
+    <section className="bg-[#111112] py-16 border-t border-white/5 overflow-hidden">
       <div className="container mx-auto px-8">
         
         {/* Section Header */}
@@ -21,65 +40,73 @@ const LatestRelease: React.FC<LatestReleaseProps> = ({ onMovieClick }) => {
         </div>
 
         {/* Carousel Layout */}
-        <div className="relative flex items-center gap-4">
+        <div className="relative flex items-center gap-4 select-none">
             
             {/* Left Arrow */}
-            <button className="text-netkin-red hover:text-white transition-colors p-2 -ml-4 z-10">
+            <button 
+                onClick={handlePrev}
+                className="text-netkin-red hover:text-white transition-colors p-2 -ml-4 z-20 hover:scale-110 transform duration-200"
+            >
                 <ChevronLeft size={40} strokeWidth={1.5} />
             </button>
 
-            <div className="flex-grow flex gap-0 items-center overflow-hidden">
-                {/* Item 1 (Partial/Side) */}
-                <div className="w-1/4 h-64 relative opacity-40 scale-90 origin-right filter grayscale brightness-50">
-                     <img src={LATEST_MOVIES[0].image} className="w-full h-full object-cover" />
+            <div className="flex-grow flex gap-0 items-center justify-center relative h-[450px]">
+                
+                {/* Item 1 (Previous/Left) */}
+                <div 
+                    className="absolute left-0 w-1/4 h-64 opacity-40 scale-90 origin-right filter grayscale brightness-50 transition-all duration-500 ease-in-out transform -translate-x-1/4 cursor-pointer"
+                    onClick={() => onMovieClick && onMovieClick(prevMovie)}
+                >
+                     <img src={prevMovie.image} className="w-full h-full object-cover rounded-sm" alt={prevMovie.title} />
                 </div>
 
                 {/* Item 2 (Active/Center) */}
                 <div 
-                    className="w-1/2 h-[450px] relative z-10 shadow-2xl mx-4 cursor-pointer group"
-                    onClick={() => onMovieClick && onMovieClick(LATEST_MOVIES[1])}
+                    className="relative w-full md:w-1/2 h-full z-10 shadow-2xl mx-4 cursor-pointer group transition-all duration-500 ease-in-out"
+                    onClick={() => onMovieClick && onMovieClick(currentMovie)}
                 >
-                    <img src={LATEST_MOVIES[1].image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                    <div className="w-full h-full overflow-hidden rounded-sm">
+                        <img src={currentMovie.image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt={currentMovie.title} />
+                    </div>
                     {/* Content Overlay */}
                     <div className="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black/90 to-transparent">
                          <p className="text-netkin-red text-xs font-bold uppercase tracking-widest mb-2">
-                             {LATEST_MOVIES[1].genre}
+                             {currentMovie.genre}
                          </p>
                          <h3 className="text-3xl font-black uppercase text-white mb-2 tracking-tight">
-                             {LATEST_MOVIES[1].title}
+                             {currentMovie.title}
                          </h3>
                          <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">
-                             {LATEST_MOVIES[1].year} - {LATEST_MOVIES[1].author}
+                             {currentMovie.year} - {currentMovie.author}
                          </p>
                     </div>
                 </div>
 
-                {/* Item 3 (Side) */}
+                {/* Item 3 (Next/Right) */}
                 <div 
-                    className="w-1/4 h-64 relative opacity-100 scale-95 cursor-pointer group"
-                    onClick={() => onMovieClick && onMovieClick(LATEST_MOVIES[2])}
+                    className="absolute right-0 w-1/4 h-64 opacity-100 scale-95 cursor-pointer group transition-all duration-500 ease-in-out transform translate-x-1/4"
+                    onClick={() => onMovieClick && onMovieClick(nextMovie)}
                 >
-                     <img src={LATEST_MOVIES[2].image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                     <div className="absolute bottom-0 left-0 w-full p-4 bg-black/60">
+                     <img src={nextMovie.image} className="w-full h-full object-cover rounded-sm" alt={nextMovie.title} />
+                     <div className="absolute bottom-0 left-0 w-full p-4 bg-black/60 rounded-b-sm">
                          <p className="text-netkin-red text-[10px] font-bold uppercase tracking-widest mb-1">
-                             {LATEST_MOVIES[2].genre}
+                             {nextMovie.genre}
                          </p>
-                         <h3 className="text-sm font-bold uppercase text-white leading-tight mb-1">
-                             {LATEST_MOVIES[2].title}
+                         <h3 className="text-sm font-bold uppercase text-white leading-tight mb-1 truncate">
+                             {nextMovie.title}
                          </h3>
                          <p className="text-gray-400 text-[9px] font-bold uppercase tracking-widest">
-                             {LATEST_MOVIES[2].year} - {LATEST_MOVIES[2].author}
+                             {nextMovie.year} - {nextMovie.author}
                          </p>
                     </div>
-                </div>
-                 {/* Item 4 (Partial) */}
-                 <div className="w-1/6 h-64 relative opacity-20 scale-90 origin-left filter grayscale brightness-50 ml-4">
-                     <img src={LATEST_MOVIES[0].image} className="w-full h-full object-cover" />
                 </div>
             </div>
 
             {/* Right Arrow */}
-            <button className="text-white hover:text-netkin-red transition-colors p-2 -mr-4 z-10">
+            <button 
+                onClick={handleNext}
+                className="text-white hover:text-netkin-red transition-colors p-2 -mr-4 z-20 hover:scale-110 transform duration-200"
+            >
                 <ChevronRight size={40} strokeWidth={1.5} />
             </button>
         </div>

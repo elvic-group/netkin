@@ -5,9 +5,10 @@ import { HERO_IMAGES } from '../constants';
 
 interface MovieHeroProps {
     onWatchClick?: () => void;
+    onPlayClick?: () => void;
 }
 
-const MovieHero: React.FC<MovieHeroProps> = ({ onWatchClick }) => {
+const MovieHero: React.FC<MovieHeroProps> = ({ onWatchClick, onPlayClick }) => {
   return (
     <div className="relative w-full h-[800px] bg-netkin-dark overflow-hidden flex items-center">
       
@@ -23,9 +24,9 @@ const MovieHero: React.FC<MovieHeroProps> = ({ onWatchClick }) => {
          <div className="absolute inset-0 bg-gradient-to-t from-netkin-dark via-transparent to-transparent"></div>
          
          {/* Play Button Overlay on Image */}
-         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30">
             <div 
-                onClick={onWatchClick}
+                onClick={onPlayClick || onWatchClick}
                 className="rounded-full border-2 border-white/30 p-1 cursor-pointer hover:scale-110 transition-transform group"
             >
                  <div className="bg-white/10 backdrop-blur-sm rounded-full p-4">

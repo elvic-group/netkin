@@ -6,11 +6,22 @@ export interface User {
   name?: string;
 }
 
+export interface Profile {
+  id: string;
+  name: string;
+  avatar: string;
+  isKid: boolean;
+  watchlist: string[]; // Array of Movie IDs
+  history: string[]; // Array of Movie IDs (recently watched)
+  ratings: Record<string, number>; // MovieID -> Rating (1-5)
+  progress: Record<string, number>; // MovieID -> Seconds watched
+}
+
 export interface NavLink {
   label: string;
   href: string;
   active?: boolean;
-  target?: 'landing' | 'news' | 'movies' | 'tvshows' | 'signin';
+  target?: 'landing' | 'news' | 'movies' | 'tvshows' | 'signin' | 'mylist';
 }
 
 export interface Feature {
@@ -41,6 +52,7 @@ export interface Movie {
   genre: string;
   year: string;
   author: string;
-  rating: string;
+  rating: string; // IMDB/Global rating
   image: string;
+  contentRating?: string;
 }

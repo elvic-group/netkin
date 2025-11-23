@@ -5,8 +5,8 @@ import { NAV_LINKS, CATALOG_MOVIES, CATALOG_TV_SHOWS, POPULAR_MOVIES, ACTION_MOV
 import { NavLink, User, Movie } from '../types';
 
 interface NavbarProps {
-  onNavigate?: (page: 'landing' | 'news' | 'movies' | 'tvshows' | 'signin') => void;
-  currentPage?: 'landing' | 'news' | 'movies' | 'tvshows' | 'signin';
+  onNavigate?: (page: 'landing' | 'news' | 'movies' | 'tvshows' | 'signin' | 'mylist') => void;
+  currentPage?: 'landing' | 'news' | 'movies' | 'tvshows' | 'signin' | 'mylist';
   user?: User | null;
   onLogout?: () => void;
   onSearchSelect?: (movie: Movie) => void;
@@ -17,7 +17,17 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, user, onLogout
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Movie[]>([]);
+  const [isScrolled, setIsScrolled] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Handle scroll for background change
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Combine all movies for search, memoized to prevent recreation on every render
   const allContent = useMemo(() => [
@@ -35,7 +45,7 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, user, onLogout
     }
   }, [isSearchOpen]);
 
-  const handleNavClick = (e: React.MouseEvent, target?: 'landing' | 'news' | 'movies' | 'tvshows' | 'signin') => {
+  const handleNavClick = (e: React.MouseEvent, target?: 'landing' | 'news' | 'movies' | 'tvshows' | 'signin' | 'mylist') => {
     e.preventDefault();
     
     let finalTarget = target;
@@ -104,11 +114,17 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, user, onLogout
     return false;
   };
 
+  // Background logic: Solid on Catalog pages or when scrolled, transparent gradient on Hero pages at top
+  const isHeroPage = currentPage === 'landing' || currentPage === 'news';
+  const bgClass = (isHeroPage && !isScrolled) 
+    ? 'bg-gradient-to-b from-black/90 to-transparent' 
+    : 'bg-netkin-dark shadow-md border-b border-white/5';
+
   return (
     <>
-      <nav className="absolute top-0 left-0 w-full z-50 px-8 py-6 flex items-center justify-between bg-gradient-to-b from-black/90 to-transparent">
+      <nav className={`fixed top-0 left-0 w-full z-50 px-8 py-6 flex items-center justify-between transition-all duration-300 ${bgClass}`}>
         <div className="flex items-center gap-12 flex-grow">
-          {/* Logo */}
+          {/* Logo - Click to Home */}
           <button 
             onClick={(e) => handleNavClick(e, 'landing')}
             className="flex items-center gap-2 group flex-shrink-0"

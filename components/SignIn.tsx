@@ -1,10 +1,12 @@
+
 import React, { useState } from 'react';
 
 interface SignInProps {
   onLogin?: (email: string) => void;
+  onBrowseAsGuest?: () => void;
 }
 
-const SignIn: React.FC<SignInProps> = ({ onLogin }) => {
+const SignIn: React.FC<SignInProps> = ({ onLogin, onBrowseAsGuest }) => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -61,14 +63,14 @@ const SignIn: React.FC<SignInProps> = ({ onLogin }) => {
         <div className="absolute inset-0 bg-gradient-to-t from-netkin-dark via-transparent to-black/40"></div>
       </div>
 
-      {/* Modal Card */}
-      <div className="relative z-10 bg-white p-10 md:p-12 w-full max-w-[440px] shadow-2xl transition-all duration-500">
-        <h2 className="text-3xl font-black text-center text-black mb-10 uppercase tracking-tighter">
+      {/* Modal Card - Dark Theme */}
+      <div className="relative z-10 bg-[#181818] border border-white/10 p-10 md:p-12 w-full max-w-[440px] shadow-2xl transition-all duration-500">
+        <h2 className="text-3xl font-black text-center text-white mb-10 uppercase tracking-tighter">
           {isRegistering ? 'Register' : 'Sign In'}
         </h2>
 
         {error && (
-            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 text-xs font-bold uppercase text-center">
+            <div className="mb-4 p-3 bg-red-900/50 border border-red-500/50 text-red-200 text-xs font-bold uppercase text-center">
                 {error}
             </div>
         )}
@@ -81,7 +83,7 @@ const SignIn: React.FC<SignInProps> = ({ onLogin }) => {
               placeholder="Email" 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-5 py-4 text-xs font-bold border border-gray-300 text-black placeholder-black focus:outline-none focus:border-netkin-red transition-colors"
+              className="w-full px-5 py-4 text-xs font-bold border border-gray-700 bg-[#333] text-white placeholder-gray-400 focus:outline-none focus:border-netkin-red transition-colors rounded-sm"
             />
           </div>
           <div>
@@ -91,14 +93,14 @@ const SignIn: React.FC<SignInProps> = ({ onLogin }) => {
               placeholder="Password" 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-5 py-4 text-xs font-bold border border-gray-300 text-black placeholder-black focus:outline-none focus:border-netkin-red transition-colors"
+              className="w-full px-5 py-4 text-xs font-bold border border-gray-700 bg-[#333] text-white placeholder-gray-400 focus:outline-none focus:border-netkin-red transition-colors rounded-sm"
             />
           </div>
 
           <button 
             type="submit"
             disabled={isLoading}
-            className="w-full bg-netkin-red text-white font-bold text-xs uppercase py-4 tracking-widest hover:bg-red-700 transition-colors shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center"
+            className="w-full bg-netkin-red text-white font-bold text-xs uppercase py-4 tracking-widest hover:bg-red-700 transition-colors shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center rounded-sm"
           >
             {isLoading ? (
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -109,26 +111,26 @@ const SignIn: React.FC<SignInProps> = ({ onLogin }) => {
         </form>
 
         <div className="text-center mt-6">
-          <a href="#" className="text-netkin-red text-[11px] font-medium hover:underline">
+          <a href="#" className="text-gray-400 text-[11px] font-medium hover:text-white hover:underline transition-colors">
             Forgot your email or password?
           </a>
         </div>
 
         <div className="flex items-center gap-4 my-8">
-          <div className="h-px bg-gray-300 flex-grow"></div>
-          <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Or</span>
-          <div className="h-px bg-gray-300 flex-grow"></div>
+          <div className="h-px bg-gray-700 flex-grow"></div>
+          <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Or</span>
+          <div className="h-px bg-gray-700 flex-grow"></div>
         </div>
 
         <button 
             onClick={handleFacebookLogin}
-            className="w-full bg-[#3b5998] text-white font-bold text-xs uppercase py-4 tracking-widest hover:bg-[#2d4373] transition-colors shadow-md mb-10"
+            className="w-full bg-[#3b5998] text-white font-bold text-xs uppercase py-4 tracking-widest hover:bg-[#2d4373] transition-colors shadow-md mb-10 rounded-sm"
         >
           {isRegistering ? 'Sign up with Facebook' : 'Sign in with Facebook'}
         </button>
 
         <div className="text-center">
-          <p className="text-[10px] md:text-xs text-black uppercase tracking-wide font-medium">
+          <p className="text-[10px] md:text-xs text-gray-400 uppercase tracking-wide font-medium">
             {isRegistering ? 'Already have an account?' : 'New user?'} 
             <button 
                 type="button"
@@ -138,12 +140,24 @@ const SignIn: React.FC<SignInProps> = ({ onLogin }) => {
                     setEmail('');
                     setPassword('');
                 }}
-                className="font-black text-black hover:underline ml-1 uppercase"
+                className="font-black text-white hover:text-netkin-red hover:underline ml-1 uppercase transition-colors"
             >
                 {isRegistering ? 'Sign In' : 'REGISTER'}
             </button>
           </p>
         </div>
+
+        {onBrowseAsGuest && (
+          <div className="text-center mt-8 pt-8 border-t border-white/5">
+                <button 
+                  type="button"
+                  onClick={onBrowseAsGuest}
+                  className="text-gray-500 hover:text-white text-[10px] font-bold uppercase tracking-widest transition-colors border-b border-transparent hover:border-white pb-1"
+              >
+                  Browse as Guest
+              </button>
+          </div>
+        )}
       </div>
     </div>
   );
