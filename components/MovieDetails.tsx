@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { X, ChevronDown, ChevronRight, Search, Play, Pause, Volume2, VolumeX, Maximize, Minimize, MessageSquare, PlayCircle } from 'lucide-react';
+import { X, ChevronDown, ChevronRight, Search, Play, Pause, Volume2, VolumeX, Maximize, Minimize, MessageSquare, PlayCircle, Share2, Check } from 'lucide-react';
 import { Movie } from '../types';
 import { NAV_LINKS } from '../constants';
 
@@ -20,12 +20,16 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movie, onClose }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isBuffering, setIsBuffering] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const controlsTimeoutRef = useRef<number | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // Share State
+  const [isCopied, setIsCopied] = useState(false);
 
   // Loading Simulation
   useEffect(() => {
@@ -85,11 +89,32 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movie, onClose }) => {
     setIsPlaying(!isPlaying);
   };
 
+  const handleLoadedMetadata = () => {
+    if (videoRef.current) {
+      setDuration(videoRef.current.duration);
+      // Resume from saved progress
+      const savedTime = localStorage.getItem(`netkin_progress_${movie.id}`);
+      if (savedTime) {
+        const time = parseFloat(savedTime);
+        // Only resume if not finished (arbitrary buffer of 5 seconds from end)
+        if (!isNaN(time) && time < videoRef.current.duration - 5) {
+            videoRef.current.currentTime = time;
+            setCurrentTime(time);
+        }
+      }
+    }
+  };
+
   const handleTimeUpdate = () => {
     if (videoRef.current) {
-      setCurrentTime(videoRef.current.currentTime);
+      const time = videoRef.current.currentTime;
+      setCurrentTime(time);
       if (videoRef.current.duration) {
         setDuration(videoRef.current.duration);
+      }
+      // Save progress to local storage
+      if (time > 0) {
+        localStorage.setItem(`netkin_progress_${movie.id}`, time.toString());
       }
     }
   };
@@ -131,6 +156,26 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movie, onClose }) => {
       document.addEventListener('fullscreenchange', handleFullscreenChange);
       return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
+
+  const handleShare = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const shareUrl = `${window.location.origin}/watch/${movie.id}`;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: movie.title,
+            text: `Watch ${movie.title} on Netkin`,
+            url: shareUrl,
+        }).catch(() => {
+             // Fallback if user cancels or share fails
+        });
+    } else {
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            setIsCopied(true);
+            setTimeout(() => setIsCopied(false), 2000);
+        }).catch(err => console.error('Failed to copy:', err));
+    }
+  };
 
   const formatTime = (seconds: number) => {
     if (isNaN(seconds)) return "0:00:00";
@@ -195,10 +240,27 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movie, onClose }) => {
         ref={videoRef}
         src={VIDEO_URL}
         className={`absolute inset-0 w-full h-full object-contain bg-black transition-opacity duration-500 ${viewState === 'playing' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        onLoadedMetadata={handleLoadedMetadata}
         onTimeUpdate={handleTimeUpdate}
-        onEnded={() => setIsPlaying(false)}
+        onEnded={() => {
+            setIsPlaying(false);
+            localStorage.removeItem(`netkin_progress_${movie.id}`);
+        }}
+        onWaiting={() => setIsBuffering(true)}
+        onPlaying={() => {
+            setIsBuffering(false);
+            setIsPlaying(true);
+        }}
+        onCanPlay={() => setIsBuffering(false)}
         onClick={(e) => { e.stopPropagation(); togglePlay(); }}
       />
+
+      {/* === BUFFERING INDICATOR === */}
+      {viewState === 'playing' && isBuffering && (
+        <div className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none">
+            <div className="w-16 h-16 border-4 border-white/20 border-t-netkin-red rounded-full animate-spin drop-shadow-lg"></div>
+        </div>
+      )}
 
       {/* === BACKGROUND IMAGE (Overview / Loading) === */}
       {viewState !== 'playing' && (
@@ -291,6 +353,14 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movie, onClose }) => {
                            247/600 Peers
                        </span>
                   </div>
+
+                   <button 
+                      onClick={handleShare}
+                      className="flex items-center justify-center border border-white/20 w-10 h-10 md:w-auto md:px-4 md:h-auto md:py-3 bg-transparent text-white hover:bg-white/5 transition-colors"
+                      title="Share"
+                   >
+                      {isCopied ? <Check size={16} className="text-netkin-red" /> : <Share2 size={16} />}
+                  </button>
               </div>
 
               {/* Thumbnails */}

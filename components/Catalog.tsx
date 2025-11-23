@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { ChevronDown, PlayCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ChevronDown, PlayCircle, Plus, Check } from 'lucide-react';
 import { GENRES } from '../constants';
 import { Movie } from '../types';
 
@@ -10,6 +10,31 @@ interface CatalogProps {
 }
 
 const Catalog: React.FC<CatalogProps> = ({ onMovieClick, movies }) => {
+  const [watchlist, setWatchlist] = useState<string[]>([]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('netkin_watchlist');
+    if (saved) {
+      try {
+        setWatchlist(JSON.parse(saved));
+      } catch (e) {
+        console.error("Failed to parse watchlist", e);
+      }
+    }
+  }, []);
+
+  const toggleWatchlist = (e: React.MouseEvent, movieId: string) => {
+    e.stopPropagation();
+    let newWatchlist;
+    if (watchlist.includes(movieId)) {
+      newWatchlist = watchlist.filter(id => id !== movieId);
+    } else {
+      newWatchlist = [...watchlist, movieId];
+    }
+    setWatchlist(newWatchlist);
+    localStorage.setItem('netkin_watchlist', JSON.stringify(newWatchlist));
+  };
+
   return (
     <div className="container mx-auto px-4 md:px-8 py-32 md:pt-32 flex flex-col md:flex-row gap-8">
       {/* Sidebar */}
@@ -42,7 +67,9 @@ const Catalog: React.FC<CatalogProps> = ({ onMovieClick, movies }) => {
 
           {/* Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
-              {movies.map((movie) => (
+              {movies.map((movie) => {
+                 const isInWatchlist = watchlist.includes(movie.id);
+                 return (
                  <div 
                     key={movie.id} 
                     className="group cursor-pointer"
@@ -57,8 +84,19 @@ const Catalog: React.FC<CatalogProps> = ({ onMovieClick, movies }) => {
                         />
                         
                         {/* Rating Badge */}
-                        <div className="absolute top-0 right-0 bg-netkin-red px-2 py-2">
+                        <div className="absolute top-0 right-0 bg-netkin-red px-2 py-2 z-10">
                             <span className="text-white text-xs font-bold block">{movie.rating}</span>
+                        </div>
+
+                        {/* Watchlist Button */}
+                        <div className="absolute top-2 left-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <button 
+                                onClick={(e) => toggleWatchlist(e, movie.id)}
+                                className={`p-2 rounded-full transition-colors ${isInWatchlist ? 'bg-netkin-red text-white' : 'bg-black/60 text-white hover:bg-netkin-red'}`}
+                                title={isInWatchlist ? "Remove from Watchlist" : "Add to Watchlist"}
+                            >
+                                {isInWatchlist ? <Check size={16} strokeWidth={3} /> : <Plus size={16} strokeWidth={3} />}
+                            </button>
                         </div>
 
                         {/* Hover Play Overlay */}
@@ -80,7 +118,7 @@ const Catalog: React.FC<CatalogProps> = ({ onMovieClick, movies }) => {
                         </p>
                     </div>
                 </div>
-              ))}
+              )})}
           </div>
 
           {/* Reload Button */}

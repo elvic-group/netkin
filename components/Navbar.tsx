@@ -1,69 +1,206 @@
 
-import React, { useState } from 'react';
-import { Search, Menu, X, LogOut, User as UserIcon } from 'lucide-react';
-import { NAV_LINKS } from '../constants';
-import { NavLink, User } from '../types';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { Search, Menu, X, LogOut, User as UserIcon, PlayCircle } from 'lucide-react';
+import { NAV_LINKS, CATALOG_MOVIES, CATALOG_TV_SHOWS, POPULAR_MOVIES, ACTION_MOVIES, ADVENTURE_MOVIES, LATEST_MOVIES } from '../constants';
+import { NavLink, User, Movie } from '../types';
 
 interface NavbarProps {
   onNavigate?: (page: 'landing' | 'news' | 'movies' | 'tvshows' | 'signin') => void;
   currentPage?: 'landing' | 'news' | 'movies' | 'tvshows' | 'signin';
   user?: User | null;
   onLogout?: () => void;
+  onSearchSelect?: (movie: Movie) => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, user, onLogout }) => {
+const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, user, onLogout, onSearchSelect }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<Movie[]>([]);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Combine all movies for search, memoized to prevent recreation on every render
+  const allContent = useMemo(() => [
+      ...CATALOG_MOVIES, 
+      ...CATALOG_TV_SHOWS, 
+      ...LATEST_MOVIES, 
+      ...POPULAR_MOVIES, 
+      ...ACTION_MOVIES, 
+      ...ADVENTURE_MOVIES
+  ], []);
+
+  useEffect(() => {
+    if (isSearchOpen && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [isSearchOpen]);
 
   const handleNavClick = (e: React.MouseEvent, target?: 'landing' | 'news' | 'movies' | 'tvshows' | 'signin') => {
     e.preventDefault();
-    if (onNavigate && target) {
-      onNavigate(target);
+    
+    let finalTarget = target;
+
+    // UX Improvement: If user is logged in, "HOME" (landing) should go to "NEWS" (Dashboard)
+    if (user && target === 'landing') {
+        finalTarget = 'news';
+    }
+
+    if (onNavigate && finalTarget) {
+      onNavigate(finalTarget);
     }
     setIsMenuOpen(false);
+    setIsSearchOpen(false);
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+
+    if (query.length > 1) {
+      const lowerQuery = query.toLowerCase();
+      // Filter by title, genre, or author, case insensitive
+      const filtered = allContent.filter(m => 
+        m.title.toLowerCase().includes(lowerQuery) ||
+        m.genre.toLowerCase().includes(lowerQuery) ||
+        m.author.toLowerCase().includes(lowerQuery)
+      );
+      
+      // Deduplicate by title to avoid showing the same movie multiple times from different lists
+      const uniqueMovies = Array.from(new Map(filtered.map(m => [m.title, m])).values());
+      
+      setSearchResults(uniqueMovies.slice(0, 5)); // Limit to 5 suggestions
+    } else {
+      setSearchResults([]);
+    }
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      // If there are results, select the first one on enter
+      if (searchResults.length > 0 && onSearchSelect) {
+          onSearchSelect(searchResults[0]);
+          closeSearch();
+      }
+  };
+
+  const selectSearchResult = (movie: Movie) => {
+      if (onSearchSelect) {
+          onSearchSelect(movie);
+      }
+      closeSearch();
+  };
+
+  const closeSearch = () => {
+      setIsSearchOpen(false);
+      setSearchQuery('');
+      setSearchResults([]);
   };
 
   const isLinkActive = (link: NavLink) => {
     if (link.active) return true;
     if (link.target === currentPage) return true;
+    // Highlight HOME/NEWS if on dashboard
+    if (user && link.target === 'landing' && currentPage === 'news') return true;
     return false;
   };
 
   return (
     <>
       <nav className="absolute top-0 left-0 w-full z-50 px-8 py-6 flex items-center justify-between bg-gradient-to-b from-black/90 to-transparent">
-        <div className="flex items-center gap-12">
+        <div className="flex items-center gap-12 flex-grow">
           {/* Logo */}
           <button 
-            onClick={(e) => handleNavClick(e, user ? 'news' : 'landing')}
-            className="flex items-center gap-2 group"
+            onClick={(e) => handleNavClick(e, 'landing')}
+            className="flex items-center gap-2 group flex-shrink-0"
           >
              <span className="text-3xl font-black italic tracking-tighter text-white group-hover:scale-105 transition-transform">Netkin</span>
              {/* Simple Triangle Play icon simulation for logo */}
              <div className="w-0 h-0 border-t-[6px] border-t-transparent border-l-[10px] border-l-white border-b-[6px] border-b-transparent ml-1"></div>
           </button>
 
-          {/* Desktop Links */}
-          <div className="hidden md:flex items-center gap-8">
-            {NAV_LINKS.map((link) => (
-              <button
-                key={link.label}
-                onClick={(e) => handleNavClick(e, link.target)}
-                className={`text-[10px] font-bold tracking-[0.2em] uppercase hover:text-white transition-colors pb-1 ${
-                  isLinkActive(link)
-                    ? 'text-netkin-red' 
-                    : 'text-gray-400'
-                }`}
-              >
-                {link.label}
-              </button>
-            ))}
+          {/* Desktop Links / Search Bar */}
+          <div className="hidden md:flex items-center gap-8 flex-grow relative">
+            {isSearchOpen ? (
+                <div className="w-full max-w-2xl relative animate-in fade-in slide-in-from-top-2 duration-300">
+                    <form onSubmit={handleSearchSubmit} className="relative w-full">
+                        <input 
+                            ref={searchInputRef}
+                            type="text" 
+                            value={searchQuery}
+                            onChange={handleSearchChange}
+                            placeholder="Titles, people, genres"
+                            className="w-full bg-black/50 border border-white/30 text-white px-4 py-2 text-sm font-bold tracking-wide focus:outline-none focus:border-netkin-red placeholder-gray-500"
+                        />
+                        <button 
+                            type="button"
+                            onClick={closeSearch}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                        >
+                            <X size={16} />
+                        </button>
+                    </form>
+
+                    {/* Suggestions Dropdown */}
+                    {(searchResults.length > 0 || (searchQuery.length > 1 && searchResults.length === 0)) && (
+                        <div className="absolute top-full left-0 w-full bg-[#1F2024] border border-white/10 shadow-2xl mt-1 z-50">
+                            {searchResults.length > 0 ? (
+                                searchResults.map(movie => (
+                                    <div 
+                                        key={movie.id}
+                                        onClick={() => selectSearchResult(movie)}
+                                        className="flex items-center gap-4 p-3 hover:bg-white/5 cursor-pointer group border-b border-white/5 last:border-none transition-colors"
+                                    >
+                                        <div className="w-10 h-14 bg-gray-800 flex-shrink-0 overflow-hidden">
+                                            <img src={movie.image} alt={movie.title} className="w-full h-full object-cover" />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <span className="text-xs font-bold text-white uppercase tracking-wider group-hover:text-netkin-red transition-colors">
+                                                {movie.title}
+                                            </span>
+                                            <span className="text-[10px] text-gray-500 uppercase font-bold">
+                                                {movie.year} • {movie.genre}
+                                            </span>
+                                        </div>
+                                        <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <PlayCircle size={20} className="text-netkin-red" />
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="p-6 text-center">
+                                    <p className="text-gray-500 text-xs font-bold uppercase tracking-wider">No results found</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            ) : (
+                NAV_LINKS.map((link) => (
+                <button
+                    key={link.label}
+                    onClick={(e) => handleNavClick(e, link.target)}
+                    className={`text-[10px] font-bold tracking-[0.2em] uppercase hover:text-white transition-colors pb-1 ${
+                    isLinkActive(link)
+                        ? 'text-netkin-red' 
+                        : 'text-gray-400'
+                    }`}
+                >
+                    {link.label}
+                </button>
+                ))
+            )}
           </div>
         </div>
 
-        <div className="flex items-center gap-6">
-          <button className="text-white hover:text-netkin-red transition-colors">
-            <Search size={18} strokeWidth={3} />
-          </button>
+        <div className="flex items-center gap-6 pl-8">
+          {!isSearchOpen && (
+            <button 
+                onClick={() => setIsSearchOpen(true)}
+                className="text-white hover:text-netkin-red transition-colors"
+            >
+                <Search size={18} strokeWidth={3} />
+            </button>
+          )}
           
           {/* Mobile Menu Toggle */}
           <button 

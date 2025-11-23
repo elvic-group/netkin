@@ -63,6 +63,7 @@ function App() {
         currentPage={page} 
         user={user} 
         onLogout={handleLogout}
+        onSearchSelect={handleMovieClick}
       />
       
       <div className="flex-grow flex flex-col">
